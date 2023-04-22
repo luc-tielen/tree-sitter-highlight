@@ -9,8 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 tree-sitter-highlight = "0.20"
-tree-sitter-eclair = { path = "../tree-sitter-eclair" }
-#tree-sitter-regex = { git = "https://github.com/devongovett/tree-sitter-regex" }
+tree-sitter-eclair = { git = "https://github.com/luc-tielen/tree-sitter-eclair" }
 napi = "2"
 napi-derive = "2"
 lazy_static = "1.4"
