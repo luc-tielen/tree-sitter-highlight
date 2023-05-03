@@ -64,11 +64,12 @@ lazy_static! {
     };
     static ref LLVM_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
         let mut config = HighlightConfiguration::new(
-            tree_sitter_LLVM::language(),
-            "", // TODO fix highlights
+            tree_sitter_llvm::language(),
+            tree_sitter_llvm::HIGHLIGHTS_QUERY,
             "",
-            ""
-        ).unwrap();
+            "",
+        )
+        .unwrap();
 
         let mut highlight_names = Vec::new();
         add_highlight_names(&mut config, &mut highlight_names);
