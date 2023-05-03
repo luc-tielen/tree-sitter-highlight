@@ -1,7 +1,7 @@
 # tree-sitter-highlight
 
 A syntax highlighter for Node.js powered by [Tree Sitter](https://github.com/tree-sitter/tree-sitter). Written in Rust.
-<strong>NOTE: This fork only supports [Eclair](https://github.com/luc-tielen/eclair-lang)</strong>
+<strong>NOTE: This fork only supports [Eclair](https://github.com/luc-tielen/eclair-lang), TS, Haskell, Bash and C.</strong>
 
 ## Usage
 
