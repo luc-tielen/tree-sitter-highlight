@@ -3,11 +3,100 @@ use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use tree_sitter_highlight::{HighlightConfiguration, HighlightEvent, Highlighter, HtmlRenderer};
 
+#[napi]
+pub enum Language {
+    Eclair,
+    TS,
+    Bash,
+    LLVM,
+    C,
+    Haskell,
+}
+
 lazy_static! {
     static ref ECLAIR_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
         let mut config = HighlightConfiguration::new(
             tree_sitter_eclair::language(),
             tree_sitter_eclair::HIGHLIGHTS_QUERY,
+            "",
+            "",
+        )
+        .unwrap();
+
+        let mut highlight_names = Vec::new();
+        add_highlight_names(&mut config, &mut highlight_names);
+        config.configure(&highlight_names);
+        let (html_attrs, class_names) = get_attrs(&highlight_names);
+
+        (config, html_attrs, class_names)
+    };
+    static ref TS_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
+        let mut config = HighlightConfiguration::new(
+            tree_sitter_typescript::language_typescript(),
+            tree_sitter_typescript::HIGHLIGHT_QUERY,
+            "",
+            "",
+        )
+        .unwrap();
+
+        let mut highlight_names = Vec::new();
+        add_highlight_names(&mut config, &mut highlight_names);
+        config.configure(&highlight_names);
+        let (html_attrs, class_names) = get_attrs(&highlight_names);
+
+        (config, html_attrs, class_names)
+    };
+    static ref BASH_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
+        let mut config = HighlightConfiguration::new(
+            tree_sitter_bash::language(),
+            tree_sitter_bash::HIGHLIGHT_QUERY,
+            "",
+            "",
+        )
+        .unwrap();
+
+        let mut highlight_names = Vec::new();
+        add_highlight_names(&mut config, &mut highlight_names);
+        config.configure(&highlight_names);
+        let (html_attrs, class_names) = get_attrs(&highlight_names);
+
+        (config, html_attrs, class_names)
+    };
+    static ref LLVM_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
+        let mut config = HighlightConfiguration::new(
+            tree_sitter_LLVM::language(),
+            "", // TODO fix highlights
+            "",
+            ""
+        ).unwrap();
+
+        let mut highlight_names = Vec::new();
+        add_highlight_names(&mut config, &mut highlight_names);
+        config.configure(&highlight_names);
+        let (html_attrs, class_names) = get_attrs(&highlight_names);
+
+        (config, html_attrs, class_names)
+    };
+    static ref C_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
+        let mut config = HighlightConfiguration::new(
+            tree_sitter_c::language(),
+            tree_sitter_c::HIGHLIGHT_QUERY,
+            "",
+            "",
+        )
+        .unwrap();
+
+        let mut highlight_names = Vec::new();
+        add_highlight_names(&mut config, &mut highlight_names);
+        config.configure(&highlight_names);
+        let (html_attrs, class_names) = get_attrs(&highlight_names);
+
+        (config, html_attrs, class_names)
+    };
+    static ref HASKELL_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
+        let mut config = HighlightConfiguration::new(
+            tree_sitter_haskell::language(),
+            tree_sitter_haskell::HIGHLIGHTS_QUERY,
             "",
             "",
         )
@@ -44,9 +133,24 @@ fn get_attrs(highlight_names: &Vec<String>) -> (Vec<String>, Vec<String>) {
     (html_attrs, class_names)
 }
 
+fn load_language<'a>(
+    language: Language,
+) -> (&'a HighlightConfiguration, &'a Vec<String>, &'a Vec<String>) {
+    let (config, html_attrs, class_names) = match language {
+        Language::Eclair => &*ECLAIR_CONFIG,
+        Language::TS => &*TS_CONFIG,
+        Language::Bash => &*BASH_CONFIG,
+        Language::C => &*C_CONFIG,
+        Language::LLVM => &*LLVM_CONFIG,
+        Language::Haskell => &*HASKELL_CONFIG,
+    };
+
+    (&config, &html_attrs, &class_names)
+}
+
 #[napi]
-fn highlight(code: String) -> String {
-    let (config, html_attrs, _) = &*ECLAIR_CONFIG;
+fn highlight(code: String, language: Language) -> String {
+    let (config, html_attrs, _) = load_language(language);
     let mut highlighter = Highlighter::new();
     let highlights = highlighter
         .highlight(&config, code.as_bytes(), None, |_| None)
@@ -86,8 +190,8 @@ struct HastTextNode {
 }
 
 #[napi]
-fn highlight_hast(code: String) -> HastNode {
-    let (config, _, class_names) = &*ECLAIR_CONFIG;
+fn highlight_hast(code: String, language: Language) -> HastNode {
+    let (config, _, class_names) = load_language(language);
     let mut highlighter = Highlighter::new();
     let highlights = highlighter
         .highlight(&config, code.as_bytes(), None, |_| None)
