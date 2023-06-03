@@ -10,6 +10,7 @@ pub enum Language {
     Bash,
     LLVM,
     C,
+    Rust,
     Haskell,
 }
 
@@ -94,6 +95,22 @@ lazy_static! {
 
         (config, html_attrs, class_names)
     };
+    static ref RUST_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
+        let mut config = HighlightConfiguration::new(
+            tree_sitter_rust::language(),
+            tree_sitter_rust::HIGHLIGHT_QUERY,
+            "",
+            "",
+        )
+        .unwrap();
+
+        let mut highlight_names = Vec::new();
+        add_highlight_names(&mut config, &mut highlight_names);
+        config.configure(&highlight_names);
+        let (html_attrs, class_names) = get_attrs(&highlight_names);
+
+        (config, html_attrs, class_names)
+    };
     static ref HASKELL_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
         let mut config = HighlightConfiguration::new(
             tree_sitter_haskell::language(),
@@ -144,6 +161,7 @@ fn load_language<'a>(
         Language::C => &*C_CONFIG,
         Language::LLVM => &*LLVM_CONFIG,
         Language::Haskell => &*HASKELL_CONFIG,
+        Language::Rust => &*RUST_CONFIG,
     };
 
     (&config, &html_attrs, &class_names)
