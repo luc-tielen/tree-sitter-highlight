@@ -10,7 +10,8 @@ export const enum Language {
   LLVM = 3,
   C = 4,
   Rust = 5,
-  Haskell = 6
+  Haskell = 6,
+  Lua = 7
 }
 export function highlight(code: string, language: Language): string
 export interface HastProperties {
