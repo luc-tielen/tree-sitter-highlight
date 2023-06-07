@@ -12,6 +12,7 @@ pub enum Language {
     C,
     Rust,
     Haskell,
+    Lua,
 }
 
 lazy_static! {
@@ -127,6 +128,22 @@ lazy_static! {
 
         (config, html_attrs, class_names)
     };
+    static ref LUA_CONFIG: (HighlightConfiguration, Vec<String>, Vec<String>,) = {
+        let mut config = HighlightConfiguration::new(
+            tree_sitter_lua::language(),
+            tree_sitter_lua::HIGHLIGHTS_QUERY,
+            "",
+            "",
+        )
+        .unwrap();
+
+        let mut highlight_names = Vec::new();
+        add_highlight_names(&mut config, &mut highlight_names);
+        config.configure(&highlight_names);
+        let (html_attrs, class_names) = get_attrs(&highlight_names);
+
+        (config, html_attrs, class_names)
+    };
 }
 
 fn add_highlight_names(config: &HighlightConfiguration, highlight_names: &mut Vec<String>) {
@@ -162,6 +179,7 @@ fn load_language<'a>(
         Language::LLVM => &*LLVM_CONFIG,
         Language::Haskell => &*HASKELL_CONFIG,
         Language::Rust => &*RUST_CONFIG,
+        Language::Lua => &*LUA_CONFIG,
     };
 
     (&config, &html_attrs, &class_names)

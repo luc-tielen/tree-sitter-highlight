@@ -140,6 +140,7 @@ dependencies = [
  "tree-sitter-haskell",
  "tree-sitter-highlight",
  "tree-sitter-llvm",
+ "tree-sitter-lua",
  "tree-sitter-rust",
  "tree-sitter-typescript",
 ]
@@ -295,6 +296,15 @@ dependencies = [
 name = "tree-sitter-llvm"
 version = "0.0.1"
 source = "git+https://github.com/luc-tielen/tree-sitter-llvm#0f8fad8608d34eb1f4c62a3a3ae55eeb557c5ff0"
+dependencies = [
+ "cc",
+ "tree-sitter",
+]
+
+[[package]]
+name = "tree-sitter-lua"
+version = "0.0.17"
+source = "git+https://github.com/luc-tielen/tree-sitter-lua#601d6f051688165afd8eebb794f04969dd4ca27a"
 dependencies = [
  "cc",
  "tree-sitter",
